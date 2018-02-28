@@ -1,0 +1,21 @@
+pool:
+  ssd:
+    storageType: block
+    recoveryTimeObjective: 0
+    provisioningPolicy:
+    - fixed
+    accessProtocol: rbd
+    maxIops: 1000
+    disks:
+    - hostname: node1
+      path: /dev/loop0
+  sas:
+    storageType: block
+    recoveryTimeObjective: 0
+    provisioningPolicy:
+    - fixed
+    accessProtocol: rbd
+    maxIops: 500
+    disks:
+    - hostname: node1
+      path: /dev/loop2
