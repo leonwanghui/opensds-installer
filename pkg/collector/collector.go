@@ -1,19 +1,20 @@
-package main
+package collector
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/leonwanghui/opensds-installer/api"
+	"github.com/leonwanghui/opensds-installer/pkg/executor"
 )
 
-type OsdLocationMapList []map[string]string
-
-func CollectOsdLocation() (OsdLocationMapList, error) {
-	metaList, err := getOsdMetadataList()
+func CollectOsdLocation() (api.OsdLocationMapList, error) {
+	metaList, err := executor.GetOsdMetadataList()
 	if err != nil {
 		return nil, err
 	}
 
-	var mapList OsdLocationMapList
+	var mapList api.OsdLocationMapList
 	for _, meta := range metaList {
 		var lMap = make(map[string]string)
 		lMap["id"] = fmt.Sprint(meta["id"])
