@@ -46,13 +46,13 @@ func GenerateCrushMap(pLocMap map[string]api.Location, mapList api.OsdLocationMa
 
 func createBucket(pName string) error {
 	// Create empty host bucket using user-specified pool name.
-	hostName := pName + "-node"
+	hostName, rootName := pName+"-node", pName
 	if err := executor.CreateHostBucket(hostName); err != nil {
 		return err
 	}
 
 	// Create empty root bucket using user-specified pool name.
-	return executor.CreateRootBucket(pName)
+	return executor.CreateRootBucket(rootName)
 }
 
 func reconstructCreatedBucket(pLoc api.Location, pName string, mapList api.OsdLocationMapList) error {
