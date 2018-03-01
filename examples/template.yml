@@ -7,7 +7,7 @@ pool:
     accessProtocol: rbd
     maxIops: 1000
     disks:
-    - hostname: node1
+    - hostname: test
       path: /dev/loop0
   sas:
     storageType: block
@@ -17,5 +17,5 @@ pool:
     accessProtocol: rbd
     maxIops: 500
     disks:
-    - hostname: node1
-      path: /dev/loop2
+    - hostname: test
+      path: /dev/loop3
