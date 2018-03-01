@@ -29,7 +29,11 @@ func RemoveBucket(name string) error {
 	return nil
 }
 
-func AddOsdInBucket(id, size, bName, bType string) error {
+func AddOsdInRootBucket(id, size, bName string) error {
+	return addOsdInBucket(id, size, bName, "root")
+}
+
+func addOsdInBucket(id, size, bName, bType string) error {
 	bucket := bType + "=" + bName
 	if _, err := execCmd("crush add", id, size, bucket); err != nil {
 		fmt.Println("When executing add osd in bucket command:", err)

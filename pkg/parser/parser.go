@@ -4,19 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/leonwanghui/opensds-installer/api"
 	"gopkg.in/yaml.v2"
 )
 
-type Config struct {
-	PoolTopology map[string]Location `yaml:"pool,flow"`
-}
-
-type Location struct {
-	Disks []map[string]string `yaml:"disks"`
-}
-
-func ParsePoolTopology(p string) (map[string]Location, error) {
-	var conf = &Config{}
+func ParsePoolTopology(p string) (map[string]api.Location, error) {
+	var conf = &api.Config{}
 
 	if err := parse(conf, p); err != nil {
 		return nil, err
