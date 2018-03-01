@@ -16,26 +16,12 @@ func GenerateCrushMap(pLocMap map[string]api.Location, mapList api.OsdLocationMa
 			continue
 		}
 
-		// Create empty root bucket using user-specified pool name.
-		if err := executor.CreateRootBucket(pName); err != nil {
+		// Create empty host, root bucket and reconstruct them.
+		if err := createBucket(pName); err != nil {
 			return err
 		}
-
-		// Reconstruct the root bucket with devicepath and host according to
-		// user's configuration.
-		for _, disk := range pLoc.Disks {
-			for _, dMap := range mapList {
-				fmt.Println("disk =", disk, "dmap =", dMap)
-				if dMap["device_path"] == disk["path"] &&
-					dMap["hostname"] == disk["hostname"] {
-					if err := executor.AddOsdInRootBucket(
-						dMap["id"],
-						dMap["size"],
-						pName); err != nil {
-						return err
-					}
-				}
-			}
+		if err := reconstructCreatedBucket(pLoc, pName, mapList); err != nil {
+			return err
 		}
 
 		// Create crush map rule using root bucket created.
@@ -56,4 +42,39 @@ func GenerateCrushMap(pLocMap map[string]api.Location, mapList api.OsdLocationMa
 	}
 
 	return nil
+}
+
+func createBucket(pName string) error {
+	// Create empty host bucket using user-specified pool name.
+	hostName := pName + "-node"
+	if err := executor.CreateHostBucket(hostName); err != nil {
+		return err
+	}
+
+	// Create empty root bucket using user-specified pool name.
+	return executor.CreateRootBucket(pName)
+}
+
+func reconstructCreatedBucket(pLoc api.Location, pName string, mapList api.OsdLocationMapList) error {
+	hostName, rootName := pName+"-node", pName
+
+	// Reconstruct the host bucket with devicepath and host according to
+	// user's configuration.
+	for _, disk := range pLoc.Disks {
+		for _, dMap := range mapList {
+			fmt.Println("disk =", disk, "dmap =", dMap)
+			if dMap["device_path"] == disk["path"] &&
+				dMap["hostname"] == disk["hostname"] {
+				if err := executor.AddOsdInHostBucket(
+					dMap["id"],
+					dMap["size"],
+					hostName); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	// Reconstruct the root bucket with generated host bucket.
+	return executor.MoveHostInRootBucket(hostName, rootName)
 }

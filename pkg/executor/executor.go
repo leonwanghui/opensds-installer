@@ -13,6 +13,10 @@ func CreateRootBucket(name string) error {
 	return createBucket(name, "root")
 }
 
+func CreateHostBucket(name string) error {
+	return createBucket(name, "host")
+}
+
 func createBucket(name, bType string) error {
 	if _, err := execOsdCmd("crush", "add-bucket", name, bType); err != nil {
 		fmt.Println("When executing create bucket command:", err)
@@ -29,14 +33,23 @@ func RemoveBucket(name string) error {
 	return nil
 }
 
-func AddOsdInRootBucket(id, size, bName string) error {
-	return addOsdInBucket(id, size, bName, "root")
+func AddOsdInHostBucket(id, size, hostName string) error {
+	return addOsdInBucket(id, size, hostName, "host")
 }
 
 func addOsdInBucket(id, size, bName, bType string) error {
 	bucket := bType + "=" + bName
 	if _, err := execOsdCmd("crush", "add", id, size, bucket); err != nil {
 		fmt.Println("When executing add osd in bucket command:", err)
+		return err
+	}
+	return nil
+}
+
+func MoveHostInRootBucket(hostName, rootName string) error {
+	rootBucket := "root=" + rootName
+	if _, err := execOsdCmd("crush", "move", hostName, rootBucket); err != nil {
+		fmt.Println("When executing move host in root bucket command:", err)
 		return err
 	}
 	return nil
