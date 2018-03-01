@@ -14,7 +14,7 @@ func CreateRootBucket(name string) error {
 }
 
 func createBucket(name, bType string) error {
-	if _, err := execCmd("crush add-bucket", name, bType); err != nil {
+	if _, err := execOsdCmd("crush", "add-bucket", name, bType); err != nil {
 		fmt.Println("When executing create bucket command:", err)
 		return err
 	}
@@ -22,7 +22,7 @@ func createBucket(name, bType string) error {
 }
 
 func RemoveBucket(name string) error {
-	if _, err := execCmd("crush remove", name); err != nil {
+	if _, err := execOsdCmd("crush", "remove", name); err != nil {
 		fmt.Println("When executing remove bucket command:", err)
 		return err
 	}
@@ -35,7 +35,7 @@ func AddOsdInRootBucket(id, size, bName string) error {
 
 func addOsdInBucket(id, size, bName, bType string) error {
 	bucket := bType + "=" + bName
-	if _, err := execCmd("crush add", id, size, bucket); err != nil {
+	if _, err := execOsdCmd("crush", "add", id, size, bucket); err != nil {
 		fmt.Println("When executing add osd in bucket command:", err)
 		return err
 	}
@@ -43,7 +43,7 @@ func addOsdInBucket(id, size, bName, bType string) error {
 }
 
 func SetPoolRule(name, ruleName string) error {
-	if _, err := execCmd("pool set", name, "crush_rule", ruleName); err != nil {
+	if _, err := execOsdCmd("pool", "set", name, "crush_rule", ruleName); err != nil {
 		fmt.Println("When executing set pool rule command:", err)
 		return err
 	}
@@ -59,7 +59,7 @@ func CreateSimpleCrushMapRule(req *api.CrushMapRuleRequest) error {
 }
 
 func createCrushMapRule(ruleType string, req *api.CrushMapRuleRequest) error {
-	if _, err := execCmd("crush rule", ruleType, req.RuleName, req.BucketName, req.BucketType, req.DeviceClass); err != nil {
+	if _, err := execOsdCmd("crush", "rule", ruleType, req.RuleName, req.BucketName, req.BucketType, req.DeviceClass); err != nil {
 		fmt.Println("When executing create crush map rule command:", err)
 		return err
 	}
@@ -68,7 +68,7 @@ func createCrushMapRule(ruleType string, req *api.CrushMapRuleRequest) error {
 
 func GetOsdMetadataList() (api.OsdMetadataList, error) {
 	// Get osd location in osd metadata
-	ret, err := execCmd("metadata")
+	ret, err := execOsdCmd("metadata")
 	if err != nil {
 		fmt.Println("When executing get osd metadata command:", err)
 		return nil, err
@@ -79,7 +79,7 @@ func GetOsdMetadataList() (api.OsdMetadataList, error) {
 	}
 
 	// Get osd capacity in osd tree
-	ret, err = execCmd("tree")
+	ret, err = execOsdCmd("tree")
 	if err != nil {
 		fmt.Println("When executing get osd tree command:", err)
 		return nil, err
@@ -96,12 +96,15 @@ func GetOsdMetadataList() (api.OsdMetadataList, error) {
 				break
 			}
 		}
-		return nil, fmt.Errorf("Cannot find osd %v in tree!", osdName)
+		if _, ok := meta["size"]; !ok {
+			return nil, fmt.Errorf("Cannot find osd %v in tree!", osdName)
+		}
 	}
 
 	return metaList, nil
 }
 
-func execCmd(cmd ...string) ([]byte, error) {
-	return exec.Command("ceph", "osd", strings.Join(cmd, " ")).Output()
+func execOsdCmd(cmd ...string) ([]byte, error) {
+	cmd = append([]string{"osd"}, cmd...)
+	return exec.Command("ceph", cmd...).Output()
 }
