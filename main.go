@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/leonwanghui/opensds-installer/pkg/collector"
@@ -8,7 +9,13 @@ import (
 	"github.com/leonwanghui/opensds-installer/pkg/parser"
 )
 
-var config_file = "examples/template.yml"
+var inputFile string
+
+func init() {
+	flag.StringVar(&inputFile, "input-file", "examples/template.yml", "the path of storage pool config file")
+
+	flag.Parse()
+}
 
 func main() {
 	if err := run(); err != nil {
@@ -17,7 +24,7 @@ func main() {
 }
 
 func run() error {
-	pLocMap, err := parser.ParsePoolTopology(config_file)
+	pLocMap, err := parser.ParsePoolTopology(inputFile)
 	if err != nil {
 		return fmt.Errorf("When parsing pool topology:", err)
 	}
