@@ -100,12 +100,21 @@ func GetOsdMetadataList() (api.OsdMetadataList, error) {
 
 	// Merge them into osd metadata list
 	retSlice := strings.Split(string(ret), "\n")
+	loc := func() int {
+		slice := strings.Fields(retSlice[0])
+		for i := range slice {
+			if slice[i] == "WEIGHT" {
+				return i
+			}
+		}
+		return 1
+	}()
 	for _, meta := range metaList {
 		osdName := "osd." + fmt.Sprint(meta["id"])
 		for _, ret := range retSlice {
 			if strings.Contains(ret, osdName) {
 				slice := strings.Fields(ret)
-				meta["size"] = slice[1]
+				meta["size"] = slice[loc]
 				break
 			}
 		}

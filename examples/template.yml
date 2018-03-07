@@ -1,21 +1,25 @@
 pool:
   ssd:
-    storageType: block
-    recoveryTimeObjective: 0
-    provisioningPolicy:
-    - fixed
-    accessProtocol: rbd
-    maxIops: 1000
+    diskType: SSD
+    AZ: default
+    accessProtocol: iscsi	
+    thinProvisioned: true
+    compressed: false
+    advanced:
+      maxIOPS: 1000
+      deduped: false
     disks:
     - hostname: test
       path: /dev/loop0
   sas:
-    storageType: block
-    recoveryTimeObjective: 0
-    provisioningPolicy:
-    - fixed
-    accessProtocol: rbd
-    maxIops: 500
+    diskType: SAS
+    AZ: default
+    accessProtocol: iscsi	
+    thinProvisioned: true
+    compressed: false
+    advanced:
+      maxIOPS: 1000
+      deduped: false
     disks:
     - hostname: test
       path: /dev/loop3

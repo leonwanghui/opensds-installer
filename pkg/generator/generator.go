@@ -29,7 +29,7 @@ func GenerateCrushMap(pLocMap map[string]api.Location, mapList api.OsdLocationMa
 		req := &api.CrushMapRuleRequest{
 			RuleName:   ruleName,
 			BucketName: pName,
-			BucketType: "root",
+			BucketType: "host",
 		}
 		if err := executor.CreateReplicatedCrushMapRule(req); err != nil {
 			return err
