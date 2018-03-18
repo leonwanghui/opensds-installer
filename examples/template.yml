@@ -2,7 +2,7 @@ pool:
   ssd:
     diskType: SSD
     AZ: default
-    accessProtocol: iscsi	
+    accessProtocol: rbd
     thinProvisioned: true
     compressed: false
     advanced:
@@ -14,12 +14,12 @@ pool:
   sas:
     diskType: SAS
     AZ: default
-    accessProtocol: iscsi	
+    accessProtocol: rbd
     thinProvisioned: true
     compressed: false
     advanced:
-      maxIOPS: 1000
+      maxIOPS: 500
       deduped: false
     disks:
     - hostname: test
-      path: /dev/loop3
+      path: /dev/loop1

@@ -2,7 +2,6 @@ package collector
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/leonwanghui/opensds-installer/api"
 	"github.com/leonwanghui/opensds-installer/pkg/ceph/executor"
@@ -17,9 +16,11 @@ func CollectOsdLocation() (api.OsdLocationMapList, error) {
 	var mapList api.OsdLocationMapList
 	for _, meta := range metaList {
 		var lMap = make(map[string]string)
+		dPath := fmt.Sprint(meta["backend_filestore_partition_path"])
+
 		lMap["id"] = fmt.Sprint(meta["id"])
 		lMap["size"] = fmt.Sprint(meta["size"])
-		lMap["device_path"] = strings.TrimRight(fmt.Sprint(meta["backend_filestore_partition_path"]), "p1")
+		lMap["device_path"] = dPath[:len(dPath)-2]
 		lMap["hostname"] = fmt.Sprint(meta["hostname"])
 		mapList = append(mapList, lMap)
 	}
